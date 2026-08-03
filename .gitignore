@@ -9,6 +9,8 @@ Backend/**/obj/
 *.env
 .env
 .env.local
+appsettings.Local.json
+secrets.json
 
 # Frontend (Next.js) - added ahead of Phase 7
 Frontend/**/node_modules/

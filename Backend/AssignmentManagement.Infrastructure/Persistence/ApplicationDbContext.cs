@@ -1,22 +1,18 @@
 using AssignmentManagement.Application.Common.Interfaces;
 using AssignmentManagement.Domain.Common;
+using AssignmentManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace AssignmentManagement.Infrastructure.Persistence;
 
-/// <summary>
-/// EF Core database context targeting PostgreSQL (via Npgsql).
-/// DbSet properties for domain entities (Users, Classes, Subjects, Assignments,
-/// Submissions, etc.) will be added incrementally as each module is built out
-/// in later phases, together with their EntityTypeConfiguration classes under
-/// Persistence/Configurations.
-/// </summary>
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
+
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
