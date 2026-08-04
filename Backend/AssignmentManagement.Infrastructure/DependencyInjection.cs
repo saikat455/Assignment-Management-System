@@ -1,6 +1,7 @@
 using AssignmentManagement.Application.Common.Interfaces;
 using AssignmentManagement.Infrastructure.Identity;
 using AssignmentManagement.Infrastructure.Persistence;
+using AssignmentManagement.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,8 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
 
-
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;
     }

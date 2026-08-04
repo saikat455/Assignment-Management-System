@@ -34,5 +34,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.IsActive)
             .IsRequired()
             .HasDefaultValue(true);
+
+        builder.HasOne(u => u.Class)
+            .WithMany(c => c.Students)
+            .HasForeignKey(u => u.ClassId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

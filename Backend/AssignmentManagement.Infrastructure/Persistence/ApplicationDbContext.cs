@@ -14,11 +14,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<User> Users => Set<User>();
 
+    public DbSet<SchoolClass> Classes => Set<SchoolClass>();
+
+    public DbSet<Subject> Subjects => Set<Subject>();
+
+    public DbSet<TeacherSubjectAssignment> TeacherAssignments => Set<TeacherSubjectAssignment>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        // Apply all IEntityTypeConfiguration<T> classes found in this assembly.
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }
 

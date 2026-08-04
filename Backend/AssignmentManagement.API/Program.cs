@@ -6,8 +6,35 @@ using AssignmentManagement.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-var builder = WebApplication.CreateBuilder(args);
 
+static string? FindEnvFile()
+{
+    var candidates = new[] { Directory.GetCurrentDirectory(), AppContext.BaseDirectory };
+
+    foreach (var start in candidates)
+    {
+        var dir = new DirectoryInfo(start);
+        while (dir is not null)
+        {
+            var candidate = Path.Combine(dir.FullName, ".env");
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+            dir = dir.Parent;
+        }
+    }
+
+    return null;
+}
+
+var envFile = FindEnvFile();
+if (envFile is not null)
+{
+    DotNetEnv.Env.Load(envFile);
+}
+
+var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

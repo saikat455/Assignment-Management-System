@@ -2,6 +2,7 @@ using AssignmentManagement.Application.Common.Exceptions;
 using AssignmentManagement.Application.Common.Interfaces;
 using AssignmentManagement.Application.Features.Auth.DTOs;
 using AssignmentManagement.Domain.Entities;
+using AssignmentManagement.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace AssignmentManagement.Application.Features.Auth;
@@ -34,13 +35,32 @@ public class AuthService : IAuthService
             throw new ConflictException($"A user with email '{request.Email}' already exists.");
         }
 
+        Guid? classId = null;
+
+        if (request.Role == Role.Student)
+        {
+            if (request.ClassId is null)
+            {
+                throw new BadRequestException("ClassId is required when registering a Student.");
+            }
+
+            var classExists = await _context.Classes.AnyAsync(c => c.Id == request.ClassId, cancellationToken);
+            if (!classExists)
+            {
+                throw new NotFoundException(nameof(SchoolClass), request.ClassId);
+            }
+
+            classId = request.ClassId;
+        }
+
         var user = new User
         {
             FullName = request.FullName.Trim(),
             Email = normalizedEmail,
             PasswordHash = _passwordHasher.Hash(request.Password),
             Role = request.Role,
-            IsActive = true
+            IsActive = true,
+            ClassId = classId
         };
 
         _context.Users.Add(user);
@@ -51,7 +71,8 @@ public class AuthService : IAuthService
             UserId = user.Id,
             FullName = user.FullName,
             Email = user.Email,
-            Role = user.Role.ToString()
+            Role = user.Role.ToString(),
+            ClassId = user.ClassId
         };
     }
 
@@ -62,8 +83,6 @@ public class AuthService : IAuthService
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail, cancellationToken);
 
-        // Same error for "no such user", "wrong password", and "deactivated"
-        // so a caller can't use the response to enumerate valid accounts.
         if (user is null || !user.IsActive || !_passwordHasher.Verify(request.Password, user.PasswordHash))
         {
             throw new UnauthorizedException("Invalid email or password.");
