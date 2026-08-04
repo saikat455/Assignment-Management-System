@@ -13,5 +13,7 @@ public interface IApplicationDbContext
 
     DbSet<TeacherSubjectAssignment> TeacherAssignments { get; }
 
+    DbSet<Assignment> Assignments { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Subject> Subjects => Set<Subject>();
 
     public DbSet<TeacherSubjectAssignment> TeacherAssignments => Set<TeacherSubjectAssignment>();
+    public DbSet<Assignment> Assignments => Set<Assignment>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

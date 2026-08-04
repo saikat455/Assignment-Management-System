@@ -71,6 +71,28 @@ public static class DbSeeder
             SubjectId = demoSubject.Id
         });
 
+        context.Assignments.AddRange(
+            new Assignment
+            {
+                Title = "Algebra Basics - Worksheet 1",
+                Description = "Complete questions 1-20 on linear equations.",
+                DeadlineUtc = DateTime.UtcNow.AddDays(7),
+                MaxMarks = 100,
+                Status = AssignmentStatus.Published,
+                SubjectId = demoSubject.Id,
+                TeacherId = teacher.Id
+            },
+            new Assignment
+            {
+                Title = "Geometry - Draft Homework",
+                Description = "Not yet ready to publish - triangle congruence problems.",
+                DeadlineUtc = DateTime.UtcNow.AddDays(14),
+                MaxMarks = 50,
+                Status = AssignmentStatus.Draft,
+                SubjectId = demoSubject.Id,
+                TeacherId = teacher.Id
+            });
+
         await context.SaveChangesAsync();
     }
 }
