@@ -71,7 +71,8 @@ public static class DbSeeder
             SubjectId = demoSubject.Id
         });
 
-        context.Assignments.AddRange(
+        var demoAssignments = new[]
+        {
             new Assignment
             {
                 Title = "Algebra Basics - Worksheet 1",
@@ -91,7 +92,20 @@ public static class DbSeeder
                 Status = AssignmentStatus.Draft,
                 SubjectId = demoSubject.Id,
                 TeacherId = teacher.Id
-            });
+            }
+        };
+
+        context.Assignments.AddRange(demoAssignments);
+        await context.SaveChangesAsync();
+
+        context.Submissions.Add(new Submission
+        {
+            AssignmentId = demoAssignments[0].Id,
+            StudentId = student.Id,
+            AnswerText = "1) x = 5, 2) x = -2, ... (demo answer)",
+            SubmittedAtUtc = DateTime.UtcNow,
+            Status = SubmissionStatus.Submitted
+        });
 
         await context.SaveChangesAsync();
     }

@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<TeacherSubjectAssignment> TeacherAssignments => Set<TeacherSubjectAssignment>();
     public DbSet<Assignment> Assignments => Set<Assignment>();
 
+    public DbSet<Submission> Submissions => Set<Submission>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

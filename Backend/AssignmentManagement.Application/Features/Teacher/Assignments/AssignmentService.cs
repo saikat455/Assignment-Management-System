@@ -109,9 +109,24 @@ public class AssignmentService : IAssignmentService
         return ToResponse(assignment, assignment.Subject, assignment.Teacher.FullName);
     }
 
+    // public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    // {
+    //     var assignment = await FindOwnedAssignmentOrThrowAsync(id, cancellationToken);
+    //     _context.Assignments.Remove(assignment);
+    //     await _context.SaveChangesAsync(cancellationToken);
+    // }
+
+
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var assignment = await FindOwnedAssignmentOrThrowAsync(id, cancellationToken);
+
+        var hasSubmissions = await _context.Submissions.AnyAsync(s => s.AssignmentId == id, cancellationToken);
+        if (hasSubmissions)
+        {
+            throw new ConflictException("This assignment cannot be deleted because students have already submitted work for it.");
+        }
+
         _context.Assignments.Remove(assignment);
         await _context.SaveChangesAsync(cancellationToken);
     }
