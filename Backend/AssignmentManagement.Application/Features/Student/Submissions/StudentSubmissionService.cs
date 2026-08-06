@@ -57,17 +57,22 @@ public class StudentSubmissionService : IStudentSubmissionService
             .FirstOrDefaultAsync(s => s.AssignmentId == assignmentId && s.StudentId == studentId, cancellationToken)
             ?? throw new NotFoundException("No submission found for this assignment yet. Submit it first.");
 
-        if (submission.Status is SubmissionStatus.Graded or SubmissionStatus.Returned)
+        if (submission.Status == SubmissionStatus.Graded)
         {
-            throw new ConflictException("This submission has already been reviewed by the teacher and can no longer be edited.");
+            throw new ConflictException("This submission has already been graded and can no longer be edited.");
         }
 
-        if (DateTime.UtcNow > assignment.DeadlineUtc)
+        if (submission.Status != SubmissionStatus.Returned && DateTime.UtcNow > assignment.DeadlineUtc)
         {
             throw new BadRequestException("The deadline has passed; you can no longer update your submission.");
         }
 
         submission.AnswerText = request.AnswerText.Trim();
+
+        if (submission.Status == SubmissionStatus.Returned)
+        {
+            submission.Status = SubmissionStatus.Submitted;
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 
