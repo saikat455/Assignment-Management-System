@@ -5,8 +5,12 @@ using AssignmentManagement.Infrastructure;
 using AssignmentManagement.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
-
+// Walk upward from both the current working directory and the build output
+// directory to find the repo-root .env file. Different launch mechanisms
+// (dotnet run, dotnet ef, IIS, a published exe) use different working
+// directories, so a fixed relative path like "../../.env" isn't reliable.
 static string? FindEnvFile()
 {
     var candidates = new[] { Directory.GetCurrentDirectory(), AppContext.BaseDirectory };
@@ -35,9 +39,20 @@ if (envFile is not null)
 }
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Accept/return enums as strings ("Returned", "Admin", etc.) in JSON,
+        // not just their numeric values - the frontend sends string enum
+        // values everywhere.
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddSwaggerGen(options =>
 {
     // Lets Swagger UI send a Bearer token with requests.
@@ -69,6 +84,23 @@ builder.Services.AddSwaggerGen(options =>
 // Application + Infrastructure layers (business logic, EF Core/PostgreSQL, identity, JWT).
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// CORS: allow the Next.js dev server (and any other origins listed in
+// config) to call this API from the browser. Credentials aren't needed
+// since auth uses a Bearer token in a header, not cookies.
+const string FrontendCorsPolicy = "FrontendCorsPolicy";
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "http://localhost:3000" };
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(FrontendCorsPolicy, policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // JWT authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -114,11 +146,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(FrontendCorsPolicy);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
+// Applies pending migrations and seeds demo Admin/Teacher/Student accounts.
 await DbSeeder.SeedAsync(app.Services);
 
 app.Run();

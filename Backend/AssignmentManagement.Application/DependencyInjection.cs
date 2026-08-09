@@ -8,6 +8,7 @@ using AssignmentManagement.Application.Features.Student.Assignments;
 using AssignmentManagement.Application.Features.Student.Submissions;
 using AssignmentManagement.Application.Features.Teacher.Assignments;
 using AssignmentManagement.Application.Features.Teacher.Submissions;
+using AssignmentManagement.Application.Features.Teacher.Subjects;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AssignmentManagement.Application;
@@ -26,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IStudentAssignmentService, StudentAssignmentService>();
         services.AddScoped<IStudentSubmissionService, StudentSubmissionService>();
         services.AddScoped<ITeacherSubmissionService, TeacherSubmissionService>();
+        services.AddScoped<ITeacherSubjectService, TeacherSubjectService>();
 
         return services;
     }
