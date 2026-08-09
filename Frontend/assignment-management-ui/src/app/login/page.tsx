@@ -37,10 +37,12 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center px-4">
-            <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <h1 className="mb-1 text-xl font-semibold text-gray-900">Sign in</h1>
-                <p className="mb-6 text-sm text-gray-500">Assignment & Submission Management System</p>
+        <div className="login-page flex min-h-screen items-center justify-center px-4">
+            <div className="login-card w-full max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                <div className="login-logo">A</div>
+                <p className="login-eyebrow">WELCOME BACK</p>
+                <h1 className="mb-1 text-2xl font-semibold text-gray-900">Sign in to Assignly</h1>
+                <p className="mb-6 text-sm text-gray-500">Your assignment workspace, all in one place.</p>
 
                 <ErrorBanner message={error} />
 
@@ -76,7 +78,7 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                <div className="mt-6 rounded-md bg-gray-50 p-3 text-xs text-gray-500">
+                <div className="demo-accounts mt-6 rounded-md bg-gray-50 p-3 text-xs text-gray-500">
                     <p className="mb-1 font-medium text-gray-600">Demo accounts</p>
                     <p>admin@school.test / Admin@123</p>
                     <p>teacher@school.test / Teacher@123</p>
