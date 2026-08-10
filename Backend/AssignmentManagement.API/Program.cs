@@ -152,6 +152,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
 
 // Applies pending migrations and seeds demo Admin/Teacher/Student accounts.
 await DbSeeder.SeedAsync(app.Services);

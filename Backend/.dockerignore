@@ -1,0 +1,7 @@
+﻿**/bin/
+**/obj/
+**/.vs/
+**/*.user
+**/Migrations/*Designer.cs.orig
+.env
+.env.*
